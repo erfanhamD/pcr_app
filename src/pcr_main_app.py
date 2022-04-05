@@ -4,7 +4,7 @@ import sys
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('mainwindow.ui', self)
+        uic.loadUi('ui_files/mainwindow.ui', self)
         self.btn_save.clicked.connect(self.btn_save_func)
         self.btn_cancel.clicked.connect(app.instance().quit)
         self.show()
