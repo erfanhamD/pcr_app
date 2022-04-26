@@ -16,7 +16,23 @@ class Ui(QtWidgets.QMainWindow):
         self.btn_cancel.clicked.connect(app.instance().quit)
         self.plot([1,2,3,4,5,6,7,8,9,10], [30,32,34,32,33,31,29,32,35,45])
         self.tab_main.setCurrentIndex(0)
+        self.x = list(range(100))
+        self.y = [np.random.randint(0, 100) for _ in range(100)]
+        self.graph_cycle.setBackground('w')
+        self.data_line = self.graph_cycle.plot(self.x, self.y)
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(50)
+        self.timer.timeout.connect(self.update_plot_data)
+        self.timer.start()
         self.show()
+
+
+    def update_plot_data(self):
+        self.x = self.x[1:]
+        self.x.append(self.x[-1]+1)
+        self.y = self.y[1:]
+        self.y.append(np.random.randint(0, 100))
+        self.data_line.setData(self.x, self.y)
 
     def btn_save_func(self):
         self.lbl_test.setText(self.le_name.text())
