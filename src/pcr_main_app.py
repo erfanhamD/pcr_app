@@ -7,7 +7,11 @@ import time
 import serial
 import os
 
+<<<<<<< HEAD
 ser = serial.Serial('/dev/tty.usbmodem14201', 9600,timeout=3)
+=======
+ser = serial.Serial('/dev/ttyACM0', 9600,timeout=3)
+>>>>>>> 9dac9a430455ed44afd11d6de3325c4989801426
 ser.reset_input_buffer()
 
 class Ui(QtWidgets.QMainWindow):
@@ -49,7 +53,11 @@ class Ui(QtWidgets.QMainWindow):
         # print("Reading data")
         # if ser.in_waiting > 0:
         line = ser.readline().decode('utf-8').rstrip()
+<<<<<<< HEAD
         # print(line)
+=======
+#        print(line)
+>>>>>>> 9dac9a430455ed44afd11d6de3325c4989801426
         args = line.split("\t")
         mode = args[0]
         cycle_stage = args[1]
@@ -57,9 +65,14 @@ class Ui(QtWidgets.QMainWindow):
         state = args[3]
         if state=="#":
             print("TRIGGER!")
+<<<<<<< HEAD
             f = os.system("ls")
             print(f)
         # print(f"current_temp: {current_temp}")
+=======
+            os.system("libcamera-jpeg -o test.jpeg --shutter 1000000")
+#        print(f"current_temp: {current_temp}")
+>>>>>>> 9dac9a430455ed44afd11d6de3325c4989801426
         current_power = args[3]
         self.lbl_test.setText(current_temp)
         # print(f"current temp ")
@@ -69,13 +82,21 @@ class Ui(QtWidgets.QMainWindow):
     def update_plot_data(self):
         self.time = self.time[1:]  # Remove the first y element.
         self.time.append(self.time[-1] +1)  # Add a new value 1 higher than the last.
+<<<<<<< HEAD
         # print(self.time)
+=======
+#        print(self.time)
+>>>>>>> 9dac9a430455ed44afd11d6de3325c4989801426
         self.temp = self.temp[1:]  # Remove the first
         try:
             self.temp.append(self.read_data()) # Add a new random value.
         except:
             pass
+<<<<<<< HEAD
         # print(self.temp)
+=======
+#        print(self.temp)
+>>>>>>> 9dac9a430455ed44afd11d6de3325c4989801426
         self.plot_ref.setData(self.time, self.temp)  # Update the data.
         
 if __name__ == "__main__":
