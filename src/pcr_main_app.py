@@ -5,8 +5,9 @@ import pyqtgraph
 import numpy as np
 import time
 import serial
+import os
 
-ser = serial.Serial('/dev/tty.usbserial-1420', 9600,timeout=3)
+ser = serial.Serial('/dev/tty.usbmodem14201', 9600,timeout=3)
 ser.reset_input_buffer()
 
 class Ui(QtWidgets.QMainWindow):
@@ -45,15 +46,20 @@ class Ui(QtWidgets.QMainWindow):
         self.lbl_test.setText(self.le_name.text())
 
     def read_data(self):
-        print("Reading data")
+        # print("Reading data")
         # if ser.in_waiting > 0:
         line = ser.readline().decode('utf-8').rstrip()
-        print(line)
+        # print(line)
         args = line.split("\t")
         mode = args[0]
         cycle_stage = args[1]
         current_temp = args[2]
-        print(f"current_temp: {current_temp}")
+        state = args[3]
+        if state=="#":
+            print("TRIGGER!")
+            f = os.system("ls")
+            print(f)
+        # print(f"current_temp: {current_temp}")
         current_power = args[3]
         self.lbl_test.setText(current_temp)
         # print(f"current temp ")
@@ -63,13 +69,13 @@ class Ui(QtWidgets.QMainWindow):
     def update_plot_data(self):
         self.time = self.time[1:]  # Remove the first y element.
         self.time.append(self.time[-1] +1)  # Add a new value 1 higher than the last.
-        print(self.time)
+        # print(self.time)
         self.temp = self.temp[1:]  # Remove the first
         try:
             self.temp.append(self.read_data()) # Add a new random value.
         except:
             pass
-        print(self.temp)
+        # print(self.temp)
         self.plot_ref.setData(self.time, self.temp)  # Update the data.
         
 if __name__ == "__main__":
