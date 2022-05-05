@@ -140,7 +140,7 @@
            <item row="0" column="1">
             <widget class="QRadioButton" name="radioButton_3">
              <property name="text">
-              <string>RadioButton</string>
+              <string/>
              </property>
             </widget>
            </item>
@@ -194,7 +194,11 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSpinBox" name="spinBox"/>
+            <widget class="QSpinBox" name="spin_time_pred">
+             <property name="value">
+              <number>10</number>
+             </property>
+            </widget>
            </item>
            <item row="1" column="0">
             <widget class="QLabel" name="label_8">
@@ -204,7 +208,11 @@
             </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QSpinBox" name="spinBox_2"/>
+            <widget class="QSpinBox" name="spin_time_den">
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
            </item>
            <item row="2" column="0">
             <widget class="QLabel" name="label_12">
@@ -214,7 +222,11 @@
             </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="spinBox_3"/>
+            <widget class="QSpinBox" name="spin_time_ext">
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
            </item>
            <item row="3" column="0">
             <widget class="QLabel" name="label_14">
@@ -224,7 +236,11 @@
             </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QSpinBox" name="spinBox_4"/>
+            <widget class="QSpinBox" name="spin_time_ann">
+             <property name="value">
+              <number>1</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
@@ -273,29 +289,45 @@
             </widget>
            </item>
            <item row="0" column="1">
-            <widget class="QSpinBox" name="spinBox_5"/>
+            <widget class="QSpinBox" name="spin_temp_pred">
+             <property name="value">
+              <number>95</number>
+             </property>
+            </widget>
            </item>
            <item row="1" column="1">
-            <widget class="QSpinBox" name="spinBox_6"/>
+            <widget class="QSpinBox" name="spin_temp_den">
+             <property name="value">
+              <number>95</number>
+             </property>
+            </widget>
            </item>
            <item row="2" column="1">
-            <widget class="QSpinBox" name="spinBox_10"/>
+            <widget class="QSpinBox" name="spin_temp_ext">
+             <property name="value">
+              <number>65</number>
+             </property>
+            </widget>
            </item>
            <item row="3" column="1">
-            <widget class="QSpinBox" name="spinBox_11"/>
+            <widget class="QSpinBox" name="spin_temp_ann">
+             <property name="value">
+              <number>72</number>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QPushButton" name="pushButton">
+         <widget class="QPushButton" name="btn_start">
           <property name="text">
            <string>Start</string>
           </property>
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QPushButton" name="pushButton_2">
+         <widget class="QPushButton" name="btn_reset">
           <property name="text">
            <string>Reset</string>
           </property>
@@ -330,7 +362,7 @@
      <x>0</x>
      <y>0</y>
      <width>745</width>
-     <height>22</height>
+     <height>24</height>
     </rect>
    </property>
   </widget>

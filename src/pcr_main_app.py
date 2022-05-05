@@ -8,7 +8,7 @@ import serial
 import os
 import threading
 
-ser = serial.Serial('/dev/tty.usbmodem14201', 9600,timeout=3)
+ser = serial.Serial('/dev/tty.usbmodem141201', 9600,timeout=3)
 ser.reset_input_buffer()
 
 class Ui(QtWidgets.QMainWindow):
@@ -35,16 +35,40 @@ class Ui(QtWidgets.QMainWindow):
         self.plot_ref = self.graph_cycle.plot(self.temp, self.time, pen=pen)
 
         self.tab_main.setCurrentIndex(0)
-        
+        self.btn_start.clicked.connect(self.send_command)
         self.timer = QtCore.QTimer()
         self.timer.setInterval(self.dt)
-        self.timer.timeout.connect(self.update_plot_data)
+        # self.timer.timeout.connect(self.update_plot_data)
 
         # Capture Image thread
         self.thread = threading.Thread(target=self.capture_image, daemon = True, args=())
 
         self.timer.start()
         self.show()
+    def aggregate_params(self):
+        pred_time = self.spin_time_pred.value()
+        pred_temp = self.spin_temp_pred.value()
+        den_time = self.spin_time_den.value()
+        den_temp = self.spin_temp_den.value()
+        ext_temp = self.spin_temp_ext.value()
+        ext_time = self.spin_time_ext.value()
+        ann_time = self.spin_time_ann.value()
+        ann_temp = self.spin_temp_ann.value()
+        print(f"pred_time: {pred_time}")
+        return pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time
+    def send_command(self):
+        pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time = self.aggregate_params()
+        params_str = f"{pred_time},{pred_temp},{den_time},{den_temp},{ext_time},{ext_temp},{ann_temp},{ann_time}"
+        print(params_str)
+        ser.write(bytes(str(params_str), 'utf-8'))
+        time.sleep(0.05)
+        # self.read_serial()
+        print(ser.readline() )
+    def read_serial(self):
+        while True:
+            read = ser.readline().decode('utf-8').rstrip() 
+            time.sleep(0.1)
+            print(read)
     def capture_image(self):
         # os.system("libcamera-jpeg -o test.jpeg --shutter 1000000")
         os.system("sleep 5")
