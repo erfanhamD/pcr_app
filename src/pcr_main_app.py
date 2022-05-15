@@ -8,8 +8,8 @@ import serial
 import os
 import threading
 
-ser = serial.Serial('/dev/cu.usbserial-1420', 9600,timeout=3)
-ser.reset_input_buffer()
+
+ser = serial.Serial('/dev/cu.usbmodem14201', 9600,timeout=3)
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):    
@@ -36,14 +36,7 @@ class Ui(QtWidgets.QMainWindow):
 
         self.tab_main.setCurrentIndex(0)
         self.btn_start.clicked.connect(self.send_command)
-        self.timer = QtCore.QTimer()
-        self.timer.setInterval(self.dt)
-        self.timer.timeout.connect(self.update_plot_data)
-
-        # Capture Image thread
-        # self.thread = threading.Thread(target=self.capture_image, daemon = True, args=())
-
-        self.timer.start()
+        
         self.show()
     def aggregate_params(self):
         pred_time = self.spin_time_pred.value()
@@ -57,12 +50,21 @@ class Ui(QtWidgets.QMainWindow):
         print(f"pred_time: {pred_time}")
         return pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time
     def send_command(self):
+        ser.reset_input_buffer()
         pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time = self.aggregate_params()
         # params_str = f"{pred_time},{pred_temp},{den_time},{den_temp},{ext_time},{ext_temp},{ann_time},{ann_temp}>"
         params_str = f"{pred_time},{pred_temp},{den_time}"
         print(params_str)
         ser.write(bytes(str(params_str), 'utf-8'))
         time.sleep(0.05)
+        self.timer = QtCore.QTimer()
+        self.timer.setInterval(self.dt)
+        self.timer.timeout.connect(self.update_plot_data)
+
+        # Capture Image thread
+        # self.thread = threading.Thread(target=self.capture_image, daemon = True, args=())
+
+        self.timer.start()
         # self.read_serial()
         print(ser.readline() )
     def read_serial(self):
@@ -82,12 +84,12 @@ class Ui(QtWidgets.QMainWindow):
         # print("Reading data")
         # if ser.in_waiting > 0:
         line = ser.readline().decode('utf-8').rstrip()
-        print(line)
+        # print(line)
         args = line.split("\t")
         # mode = args[0]
         cycle_stage = args[0]
         current_temp = args[1]
-        print(type(current_temp))
+        # print(type(current_temp))
         # state = args[3]
         # if state=="#":
         #     print("TRIGGER!")
@@ -104,18 +106,18 @@ class Ui(QtWidgets.QMainWindow):
     def update_plot_data(self):
         self.time = self.time[1:]  # Remove the first y element.
         self.time.append(self.time[-1] +1)  # Add a new value 1 higher than the last.
-        print(self.time)
+        # print(self.time)
         self.temp = self.temp[1:]  # Remove the first
         try:
-            print("TRYING")
-            print(self.read_data())
+            # print("TRYING")
+            # print(self.read_data())
             self.temp.append(self.read_data()) # Add a new random value.
             # print(self.temp)
         except Exception as e: 
-            print(e)
+            # print(e)
             print("EXCEPT")
             pass
-        print(self.temp)
+        # print(self.temp)
         self.plot_ref.setData(self.time, self.temp)  # Update the data.
         
 if __name__ == "__main__":
