@@ -21,15 +21,15 @@ class Ui(QtWidgets.QMainWindow):
         
         # Plot Style
         self.graph_cycle.setLabel('left', 'Temperature', units='C')
-        self.graph_cycle.setLabel('bottom', 'Cycle Number')
+        self.graph_cycle.setLabel('bottom', 'Time')
         self.graph_cycle.setTitle('Cycling Graph')
         self.graph_cycle.setBackground('w')
         self.graph_cycle.showGrid(x=True, y=True)
 
         # Plot Reference
         # self.temp = list(range(300))
-        self.temp = [0]*30
-        self.time = [0]*30
+        self.temp = [0]*3
+        self.time = [0]*3
         self.dt = 1000 # ms
         pen = pyqtgraph.mkPen(color=(255, 0, 0))
         self.plot_ref = self.graph_cycle.plot(self.temp, self.time, pen=pen)
@@ -49,6 +49,7 @@ class Ui(QtWidgets.QMainWindow):
         ann_temp = self.spin_temp_ann.value()
         print(f"pred_time: {pred_time}")
         return pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time
+
     def send_command(self):
         ser.reset_input_buffer()
         pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time = self.aggregate_params()
@@ -87,14 +88,14 @@ class Ui(QtWidgets.QMainWindow):
         # print(line)
         args = line.split("\t")
         # mode = args[0]
-        cycle_stage = args[0]
-        current_temp = args[1]
+        cycle_stage = args[1]
+        current_temp = args[2]
         # print(type(current_temp))
-        # state = args[3]
-        # if state=="#":
-        #     print("TRIGGER!")
+        state = args[0]
+        if state=="#":
+            print("TRIGGER!")
         #     self.thread.start()
-            # os.system("libcamera-jpeg -o test.jpeg --shutter 1000000")
+            os.system("libcamera-jpeg -o test.jpeg --shutter 1000000")
         # self.thread.join()
 #        print(f"current_temp: {current_temp}")
         # current_power = args[3]
@@ -114,7 +115,7 @@ class Ui(QtWidgets.QMainWindow):
             self.temp.append(self.read_data()) # Add a new random value.
             # print(self.temp)
         except Exception as e: 
-            # print(e)
+            print(e)
             print("EXCEPT")
             pass
         # print(self.temp)
