@@ -7,9 +7,9 @@ import time
 import serial
 import os
 import threading
+import cv2
 
-
-ser = serial.Serial('/dev/cu.usbmodem14201', 9600,timeout=3)
+ser = serial.Serial('/dev/ttyACM0', 9600,timeout=3)
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):    
@@ -28,8 +28,8 @@ class Ui(QtWidgets.QMainWindow):
 
         # Plot Reference
         # self.temp = list(range(300))
-        self.temp = [0]*3
-        self.time = [0]*3
+        self.temp = [0]*600
+        self.time = [0]*600
         self.dt = 1000 # ms
         pen = pyqtgraph.mkPen(color=(255, 0, 0))
         self.plot_ref = self.graph_cycle.plot(self.temp, self.time, pen=pen)
@@ -74,9 +74,9 @@ class Ui(QtWidgets.QMainWindow):
             time.sleep(0.1)
             print(read)
     def capture_image(self):
-        # os.system("libcamera-jpeg -o test.jpeg --shutter 1000000")
-        os.system("sleep 5")
-        os.system("echo 'Threading'")
+        os.system("libcamera-jpeg -o test.jpeg --shutter 5000000")
+        #os.system("sleep 5")
+        #os.system("echo 'Threading'")
 
     def btn_save_func(self):
         self.lbl_test.setText(self.le_name.text())
@@ -88,7 +88,7 @@ class Ui(QtWidgets.QMainWindow):
         # print(line)
         args = line.split("\t")
         # mode = args[0]
-        cycle_stage = args[1]
+        #cycle_stage = args[0]
         current_temp = args[2]
         # print(type(current_temp))
         state = args[0]
