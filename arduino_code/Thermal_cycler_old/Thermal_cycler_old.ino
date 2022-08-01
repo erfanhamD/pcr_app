@@ -35,7 +35,7 @@ short mode;
 float f=0.65;
 float f_cooling = 0;
 float f_heating = 0.8;
-float temp_0=95,
+float temp_0=98,
       temp_1=60,
       temp_2=65,
       temp_er,
@@ -47,7 +47,7 @@ float temp_0=95,
       t2=60000,
       tpe=00000,
       t_fluc=2.0,
-      t_cntrl=2.0,
+      t_cntrl=0,
       integral_pd=0,
       diff_pd,
       ctrl_pd=1,
