@@ -13,11 +13,12 @@ import cv2
 class Worker(QObject):
     finished = QtCore.pyqtSignal()
     progress = QtCore.pyqtSignal(int)
-    def run(self):
+    def run(self, cycle_number):
         """ Image Capture and Processor worker"""
-        os.system("libcamera-jpeg -o test.jpeg --shutter 5000000")
-        img = cv2.imread("test.jpeg", cv2.IMREAD_GRAYSCALE)
-        cv2.imwrite("test_out_cv.jpeg", img)
+        #os.system("libcamera-jpeg -o test.jpeg --shutter 5000000")
+        os.system(f"libcamera-still -r -o 1shahrivar/cycle-{cycle_number}.jpeg --shutter 6000000 --gain 1 --awbgains 1,1 --immediate")
+        #img = cv2.imread("test.jpeg", cv2.IMREAD_GRAYSCALE)
+        #cv2.imwrite("test_out_cv.jpeg", img)
         self.finished.emit()
 
 ser = serial.Serial('/dev/ttyACM0', 9600,timeout=3)
@@ -39,8 +40,8 @@ class Ui(QtWidgets.QMainWindow):
 
         # Plot Reference
         # self.temp = list(range(300))
-        self.temp = [0]*60
-        self.time = [0]*60
+        self.temp = [0]*600
+        self.time = [0]*600
         self.dt = 1000 # ms
         pen = pyqtgraph.mkPen(color=(255, 0, 0))
         self.plot_ref = self.graph_cycle.plot(self.temp, self.time, pen=pen)
@@ -110,14 +111,17 @@ class Ui(QtWidgets.QMainWindow):
         # mode = args[0]
         #cycle_stage = args[0]
         current_temp = args[2]
+        cycle_num = args[-1]
         # print(type(current_temp))
         state = args[0]
+        print(state)
+        print(r'{state}')
         if state=="#":
             print("TRIGGER!")
             self.thread = QThread()
             self.worker = Worker()
             self.worker.moveToThread(self.thread)
-            self.thread.started.connect(self.worker.run)
+            self.thread.started.connect(self.worker.run(cycle_number))
             self.worker.finished.connect(self.thread.quit)
             self.worker.finished.connect(self.worker.deleteLater)
             self.thread.finished.connect(self.thread.deleteLater)
@@ -130,19 +134,19 @@ class Ui(QtWidgets.QMainWindow):
 #        print(f"current_temp: {current_temp}")
         # current_power = args[3]
         # self.lbl_test.setText(current_temp)
-        print(f"current temp ")
+        #print(f"current temp ")
         print(current_temp)
         return float(current_temp)
 
     def update_plot_data(self):
         self.time = self.time[1:]  # Remove the first y element.
         self.time.append(self.time[-1] +1)  # Add a new value 1 higher than the last.
-        print(len(self.time))
+        #print(len(self.time))
         
         self.temp = self.temp[1:]  # Remove the first
         try:
-            print("TRYING")
-            print(self.read_data())
+            #print("TRYING")
+            #print(self.read_data())
             self.temp.append(self.read_data()) # Add a new random value.
             #print(self.temp)
         except Exception as e:
@@ -150,7 +154,7 @@ class Ui(QtWidgets.QMainWindow):
             print("EXCEPT")
             pass
         # print(self.temp)
-        print(len(self.temp))
+        #print(len(self.temp))
         self.plot_ref.setData(self.time, self.temp)  # Update the data.
 
 if __name__ == "__main__":
