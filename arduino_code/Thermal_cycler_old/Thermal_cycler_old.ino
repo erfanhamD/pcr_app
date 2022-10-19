@@ -35,19 +35,19 @@ short mode;
 float f=0.65;
 float f_cooling = 0;
 float f_heating = 0.8;
-float temp_0=98,
+float temp_0=95,
       temp_1=60,
-      temp_2=65,
+      temp_2=60,
       temp_er,
       tpd=0000,
       t00,
       t22,
-      t0=60000,
+      t0=6000,
       t1=0000,
-      t2=60000,
+      t2=6000,
       tpe=00000,
       t_fluc=2.0,
-      t_cntrl=0,
+      t_cntrl=2.0,
       integral_pd=0,
       diff_pd,
       ctrl_pd=1,
@@ -187,6 +187,8 @@ void loop() {
        Serial.print("\t");
        Serial.print("mode:");
        Serial.print(mode);
+       Serial.print("\t");
+       Serial.print(iter);
        Serial.print("\n");
            delay(500);
            error_0[0]=error_0[1];
@@ -309,6 +311,7 @@ Serial.print("\t");
       drive_2=K_P2*error_2[1]+K_I2*integral_2+K_d2*diff_2;
       } else {
         ctrl_2=0;
+        Serial.print("\n");
         captureImage();
       }
       if (drive_2>255) {
@@ -325,6 +328,8 @@ Serial.print("\t");
        Serial.print(mode);
 //       Serial.print("\tcycle : ");
 //       Serial.print(iter);
+       Serial.print("\t");
+       Serial.print(iter);
        Serial.print("\n");
            delay(500);
            error_2[0]=error_2[1];

@@ -9,7 +9,7 @@ import os
 import threading
 import cv2
 
-#ser = serial.Serial('/dev/ttyACM0', 9600,timeout=3)
+ser = serial.Serial('/dev/ttyACM0', 9600,timeout=3)
 
 class Ui(QtWidgets.QMainWindow):
     def __init__(self, *args, **kwargs):    
