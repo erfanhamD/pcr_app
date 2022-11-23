@@ -27,7 +27,7 @@
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="tab_home">
        <attribute name="title">
@@ -349,6 +349,16 @@
            <string>PushButton</string>
           </property>
          </widget>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_ac">
+       <attribute name="title">
+        <string>Amplification Curve</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="PlotWidget" name="graph_ac" native="true"/>
         </item>
        </layout>
       </widget>
