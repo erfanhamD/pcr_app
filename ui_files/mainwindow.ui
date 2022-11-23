@@ -27,7 +27,7 @@
        <enum>QTabWidget::North</enum>
       </property>
       <property name="currentIndex">
-       <number>3</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_home">
        <attribute name="title">
@@ -343,13 +343,6 @@
         <item>
          <widget class="PlotWidget" name="graph_cycle" native="true"/>
         </item>
-        <item>
-         <widget class="QPushButton" name="btn_plot">
-          <property name="text">
-           <string>PushButton</string>
-          </property>
-         </widget>
-        </item>
        </layout>
       </widget>
       <widget class="QWidget" name="tab_ac">
@@ -372,7 +365,7 @@
      <x>0</x>
      <y>0</y>
      <width>745</width>
-     <height>24</height>
+     <height>26</height>
     </rect>
    </property>
   </widget>
