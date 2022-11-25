@@ -140,6 +140,7 @@ class Ui(QtWidgets.QMainWindow):
         self.graph_ac.setTitle('Amplification Curve')
         self.graph_ac.setBackground('w')
         self.graph_ac.showGrid(x=True, y=True)
+        self.graph_ac.addLegend()
 
         # Ploting the Temprature for 1000 steps of time
         self.temp = [0]*1000
@@ -148,10 +149,13 @@ class Ui(QtWidgets.QMainWindow):
         self.f_intensity = pd.DataFrame()
         self.dt = 1000 # ms
         pen = pyqtgraph.mkPen(color=(255, 0, 0))
+        # list of pens with 45 colors
+        self.pens = [pyqtgraph.mkPen(color=(i, 45*1.3), width = 1) for i in range(45)]
+
         self.plot_ref = self.graph_cycle.plot(self.temp, self.time, pen=pen)
         self.ac_plot_ref = []
         for i in range(45):
-            self.ac_plot_ref.append(self.graph_ac.plot(pen = pen))
+            self.ac_plot_ref.append(self.graph_ac.plot(pen = self.pens[i], name = f"Tube {i+1}"))
         self.tab_main.setCurrentIndex(0)
         self.btn_start.clicked.connect(self.send_command)
         self.show()
@@ -277,6 +281,8 @@ class Ui(QtWidgets.QMainWindow):
         # plot each row of the f_intensity dataframe
         for idx, plot_ref in enumerate(self.ac_plot_ref):
             plot_ref.setData(f_intensity.iloc[idx])
+            # plot the plot_ref index on it
+            # plot_ref.setLabel('left', f"Intensity {idx}")
         #self.plot_ref2.setData(self.time, self.f_intensity.iloc[:,1])
         #self.plot_ref2.setData(self.time, self.f_intensity.iloc[:,2])
 
