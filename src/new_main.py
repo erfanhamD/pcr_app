@@ -264,7 +264,7 @@ class Ui(QtWidgets.QMainWindow):
         try:
             in_read = ser.readline().decode('utf-8').rstrip()
             # A check to only accept full messages
-            if in_read[0] == "&" and in_read[-1] == "&":
+            if in_read[0] == "&" and in_read[-1] == "%":
                 self.temp.append(self.read_data(in_read)) # Add a new random value.
             else:
                 print("read error 2")
@@ -276,7 +276,7 @@ class Ui(QtWidgets.QMainWindow):
             print(e)
             print("EXCEPT")
             logging.info(e)
-            sys.exit(1)
+            # sys.exit(1)
         self.plot_ref.setData(self.time, self.temp)  # Update the data.
         # plot each row of the f_intensity dataframe
         for idx, plot_ref in enumerate(self.ac_plot_ref):
