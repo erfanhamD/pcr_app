@@ -32,18 +32,20 @@ float
       temp_error_extension[2],
       time_current_denature_stage,
       drive_0,
-      time_1,
+      time_1, //Check
       time_current_extension_stage,
       drive_2;
 int iter = 1;
-int thermoCO = 13;
-int thermoCS = 11;
-int thermoCLK = 12;
+int thermoCO = 13; //Edit
+int thermoCS = 11; //Edit
+int thermoCLK = 12; //Edit
+// Input from user for temp and data
 const int Number_of_fields = 3;
 int fieldIndex = 0;
 int values[Number_of_fields];
-String out_string;
+
 MAX6675 ktc(thermoCLK, thermoCS, thermoCO);
+
 void setup() {
   pinMode(MOTOR_A1_PIN, OUTPUT);
   pinMode(MOTOR_B1_PIN, OUTPUT);
@@ -83,7 +85,7 @@ void loop() {
   // Drive coefficients
   float f_heating = 0.8,
         f_cooling = 0.0,
-        f = 0.0;
+        f = 0.0;  // edit
   // Stage Tempratures
   float temp_denature = 95,
         temp_extension = 65,
@@ -91,11 +93,11 @@ void loop() {
         temp_current,
         integral_0=0,
         diff_0,
-        ctrl_0=1,//motor control
-        ctrl_1=1,//motor control
+        ctrl_0=1,//Denaturation Flag
+        ctrl_1=1,//Extension Flag
         integral_2=0,//wtf
         diff_2,
-        ctrl_2=1,//motor control
+        ctrl_2=1,//Annealing Flag
         K_P0=60,
         K_I0=4,
         K_d0=0,
@@ -106,7 +108,7 @@ void loop() {
         total_drive2=0;
         
 
-  while(Serial.available() == 0){}
+  while(Serial.available() == 0){} //Start Switch for the control cycle sent by python
 
   if (iter<=N_cycle) { // If we havent reached the end of the Cycle do this
   
