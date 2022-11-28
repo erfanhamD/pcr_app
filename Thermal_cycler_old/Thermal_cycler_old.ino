@@ -33,7 +33,6 @@ float
       time_current_denature_stage,
       drive_0,
       time_1,
-      drive_1,
       time_current_extension_stage,
       drive_2;
 int iter = 1;
@@ -141,7 +140,7 @@ void loop() {
       //   time_current_denature_stage=millis();
       // }
       //Serial.println("11");
-      drive_0=K_P0*temp_error[1]+K_I0*integral_0+K_d0*diff_0;
+      drive_0=K_P0*temp_error[1]+K_I0*integral_0+K_d0*diff_0; // Temperature COntrolling during denaturation stage 
       } else {
         ctrl_0=0;
         //Serial.println("22");
@@ -185,7 +184,7 @@ if(iter==N_cycle) {time_should_in_extension=time_postextension+time_extension;ti
       drive_2=255;
       time_current_extension_stage=millis();
       //Serial.println("-2");
-    }  else if(temp_error_extension[1]<(-temp_threshold)){ //Emergency Cooling
+    }  else if(temp_error_extension[1]<(-temp_threshold)){
         drive_2=255;
         mode=cool;
         f = f_cooling;
