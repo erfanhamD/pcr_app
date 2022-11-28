@@ -132,21 +132,18 @@ void loop() {
       diff_0=0;
       drive_0=255;
       time_current_denature_stage=millis(); // Reseting the current stage time
-    }   else if(temp_error[1]<(-5)){ //temp_error = temp_denature - temp_current if we are so much higher than the emergency cooling temprature, we change the peltier direction.
+    }   else if(temp_error[1]<(-temp_threshold)){ //temp_error = temp_denature - temp_current if we are so much higher than the emergency cooling temprature, we change the peltier direction.
         drive_0=255;
         mode=cool;
         f = f_cooling;
       }
       else if (millis()-time_current_denature_stage<time_should_in_denature) { // This checks if we have spent enough time on the current stage.
-      //   if(temp_error[1]>temp_threshold){ //The timer starts when the temperature reaches temp_denature-temp_threshold
-      //   time_current_denature_stage=millis();
-      // }
-      //Serial.println("11");
+        if(temp_error[1]>temp_threshold){ //The timer starts when the temperature reaches temp_denature-temp_threshold
+        time_current_denature_stage=millis();
+      }
       drive_0=K_P0*temp_error[1]+K_I0*integral_0+K_d0*diff_0; // Temperature COntrolling during denaturation stage 
       } else {
         ctrl_0=0;
-        //Serial.println("22");
-        //Serial.println(millis()-time_current_denature_stage);
       }
       if (drive_0>255) {
         drive_0=255;
@@ -158,7 +155,6 @@ void loop() {
        Cycle_state = '*';
        total_drive1 = drive_0*f;
        show_result(Cycle_state , stage_name , temp_current , total_drive1 , iter);
-           
            temp_error[0]=temp_error[1];
    }
   drive_0=0;
@@ -171,65 +167,62 @@ if(iter==N_cycle) {time_should_in_extension=time_postextension+time_extension;ti
     mode=heat;
     f = f_heating;
     temp_current=ktc.readCelsius();
-    delay(500);
-  
+    delay(500); // This is needed by MAX6675 in order to work
   
   temp_error_extension[1]=temp_extension-temp_current;
   integral_2=integral_2+temp_error_extension[1];
   diff_2=temp_error_extension[1]-temp_error_extension[0];
-  if (iter<N_cycle) stage_name='X';
-  else stage_name='N';
 
+  if (iter<N_cycle) stage_name='X';
+  
+  else stage_name='N';
    if (temp_error_extension[1]>temp_threshold){
       integral_2=0;
       diff_2=0;
       drive_2=255;
       time_current_extension_stage=millis();
-      //Serial.println("-2");
+
     }  else if(temp_error_extension[1]<(-temp_threshold)){
         drive_2=255;
         mode=cool;
         f = f_cooling;
         time_current_extension_stage=millis();
-        //Serial.println("-1");
       }
+
       else if (millis()-time_current_extension_stage<time_should_in_extension) {
-//        Serial.println("0");
         if(temp_error_extension[1]>temp_threshold)
         { //The timer starts when the temperature reaches temp_denature-1.5
         time_current_extension_stage=millis();
-//        Serial.println("1");
       }
       drive_2=K_P2*temp_error_extension[1]+K_I2*integral_2+K_d2*diff_2;
+      
       } else {
         ctrl_2=0;
-//        Serial.println("2");
-//        Serial.println(millis()-time_current_extension_stage);
-
         captureImage(temp_current, drive_2, iter);
       }
+
       if (drive_2>255) {
         drive_2=255;
       }
+
       if (drive_2<0) {
         drive_2=0;
       }
+
       motorGo(MOTOR_2, mode,f*drive_2);
       total_drive2=f*drive_2;
-       show_result('*' , stage_name , temp_current , total_drive2 , iter);
-
-           
-           temp_error_extension[0]=temp_error_extension[1];
+      show_result('*' , stage_name , temp_current , total_drive2 , iter);
+      temp_error_extension[0]=temp_error_extension[1];
    }
-
   drive_2=0;
   motorGo(MOTOR_2, BRAKE,f*drive_2);
    ctrl_0=1;
-   ctrl_1=1;
+   ctrl_1=1;  // Annealing Flag
    ctrl_2=1;
    iter=iter+1;
   }
-  else if(iter==N_cycle+1){
+  // This if condition happens at the end of the PCR process
+  else if(iter==N_cycle+1){ 
     Serial.print("All ");
     Serial.print(iter-1);
     Serial.print(" have been done successfully!\n");
@@ -237,8 +230,9 @@ if(iter==N_cycle) {time_should_in_extension=time_postextension+time_extension;ti
   }
 }
 
-void motorGo(uint8_t motor, uint8_t direct, uint8_t pwm)         //Function that controls the variables: motor(0 ou 1), direction (cw ou ccw) e pwm (entra 0 e 255);
+void motorGo(uint8_t motor, uint8_t direct, uint8_t pwm)
 {
+  // Function that controls the variables: motor(0 ou 1), direction (cw ou ccw) e pwm (entra 0 e 255)
   if(motor == MOTOR_1)
   {
     if(direct == 0)
@@ -282,25 +276,22 @@ void motorGo(uint8_t motor, uint8_t direct, uint8_t pwm)         //Function that
 }
 void captureImage(float temp_current, float drive, int iter)
 {
-//  temp_current=ktc.readCelsius();
-//  delay(500);
+  // This Function sends "#" as the command to start capturing image
   show_result('#' , 'T' , temp_current , drive , iter);
 }
 
 void show_result(char state , char stage_name , float temp , float drive , int iter ){
-
-//    out_string = "<" + state + "-" + stage_name + "-" + String(temp) + "-" + String(drive) + "-" + String(iter);
-//    Serial.println(out_string);
-    Serial.print("<");
-    Serial.print(state);
+  // This function sends the serial commands to python Serial code
+    Serial.print("<");  // Starting Character for the string should be "<"
+    Serial.print(state);  // If * then we are in cycle stages, If # then we want to take a picture
+    Serial.print("-");  // Delimiter
+    Serial.print(stage_name); //  If "P" : predenaturation | "D" : denaturation | "X" : Extension | "N" : Postextension | "T" : Trigger
     Serial.print("-");
-    Serial.print(stage_name);
+    Serial.print(temp); // current temprature
     Serial.print("-");
-    Serial.print(temp);
+    Serial.print(drive);  // current drive
     Serial.print("-");
-    Serial.print(drive);
-    Serial.print("-");
-    Serial.print(iter);
-    Serial.println(">");
+    Serial.print(iter); // cycle number
+    Serial.println(">");  // Ending Character for the string should be ">"
   
 }
