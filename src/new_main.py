@@ -33,7 +33,7 @@ def marker_locater(image_address):
     img_h, img_w = marker_img.shape
     marker_img = marker_img[int(img_h/2)-int(img_h/8):int(img_h/2)+int(img_h/8), int(img_w/2)-int(img_w/8):int(img_w/2)+int(img_w/8)]
     marker_circles = cv2.HoughCircles(marker_img,cv2.HOUGH_GRADIENT,1,250,
-                                param1=30,param2=15,minRadius=0,maxRadius=80)
+                                param1=10,param2=10,minRadius=0,maxRadius=80)
     # convert the circles into integers
     marker_circles = np.uint16(np.around(marker_circles))
     # translate the marker circles to the original image
@@ -48,7 +48,7 @@ def image_processing(image_address):
     print(f"image add = {image_address}")
     cycle = image_address.split("/")[-1].split(".")[0].split("-")[-1]
     image_address_parent_dir = image_address.rsplit('/', 1)[0]
-    img_cycle_0_address = f"{image_address_parent_dir}/cycle-0.jpeg"
+    img_cycle_0_address = f"{image_address_parent_dir}/cycle-1.jpeg"
     img_cycle_0 = cv2.imread(img_cycle_0_address)
     # open relative microtube well coords 
     micro_tube_relative_coords = np.loadtxt("micro_tube_circles_relative.txt", delimiter=" ")
@@ -106,7 +106,7 @@ class Worker(QObject):
         # Calling the realtime image processing function
         print("Going to process the image")
         global intensity_list
-        # intensity_list = image_processing(img_address)
+        intensity_list = image_processing(img_address)
         # print(f"this is the intensity list {intensity_list}")
         # self.intensity_master_list = intensity_list
         f_intensity[str(self.iter)] = intensity_list
@@ -126,7 +126,8 @@ class Ui(QtWidgets.QMainWindow):
         # Reading the Assay name set by the user.
         self.lineEdit.setText("Test")
         self.btn_save.clicked.connect(self.btn_save_func)
-        self.btn_cancel.clicked.connect(app.instance().quit)
+#         self.btn_cancel.clicked.connect(app.instance().quit)
+        self.btn_cancel.clicked.connect(self.exit_app)
         self.intensity_master_list = [0]*45
         # Plot Style
         self.graph_cycle.setLabel('left', 'Temperature', units='C')
@@ -144,8 +145,8 @@ class Ui(QtWidgets.QMainWindow):
         self.graph_ac.addLegend()
 
         # Ploting the Temprature for 1000 steps of time
-        self.temp = [0]*1000
-        self.time = [0]*1000
+        self.temp = [0]*3000
+        self.time = [0]*3000
         self.cycle = np.zeros
         self.f_intensity = pd.DataFrame()
         self.dt = 100 # ms
@@ -174,6 +175,11 @@ class Ui(QtWidgets.QMainWindow):
         print(f"cycle_params:{pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time}")
         return pred_time, pred_temp, den_time, den_temp, ext_temp, ext_time, ann_temp, ann_time
 
+    def exit_app(self):
+        print("Exiting the app")
+#         ser.close()
+#         ser.open()
+        app.instance().quit
     def send_command(self):
         # Reseting the buffer to read from the end of the buffer
         # ser.reset_input_buffer()
@@ -208,7 +214,7 @@ class Ui(QtWidgets.QMainWindow):
         
         try:
             current_temp = args[2]
-            cycle_number = args[-1][:-1]
+            cycle_number = args[-1]
             state = args[0]
         except:
             print("Missing")
@@ -220,19 +226,19 @@ class Ui(QtWidgets.QMainWindow):
         #print(f" current_temp datatype:{type(current_temp)}, current temp {current_temp}")
         #print(state)
         #print(r'{}'.format(state))
-        if state=="&#":
+        if state=="#":
             # Here if the cycle state changes to # from * a thread will start to capture image and process it later
             print("TRIGGER!")
             print(args)
             self.thread = QThread(parent = self)
             print(f"iter = {cycle_number}")
-            # self.worker = Worker(cycle_number, self.lineEdit.text(), self.intensity_master_list)
-            # self.worker.moveToThread(self.thread)
-            # self.thread.started.connect(self.worker.run)
-            # self.worker.finished.connect(self.thread.quit)
-            # self.worker.finished.connect(self.worker.deleteLater)
-            # self.thread.finished.connect(self.thread.deleteLater)
-            # self.thread.start()
+            self.worker = Worker(cycle_number, self.lineEdit.text(), self.intensity_master_list)
+            self.worker.moveToThread(self.thread)
+            self.thread.started.connect(self.worker.run)
+            self.worker.finished.connect(self.thread.quit)
+            self.worker.finished.connect(self.worker.deleteLater)
+            self.thread.finished.connect(self.thread.deleteLater)
+            self.thread.start()
             # self.f_intensity[str(cycle_number)] = self.intensity_master_list
 #             self.f_intensity = np.c_[self.f_intensity, self.intensity_master_list]
             try:
